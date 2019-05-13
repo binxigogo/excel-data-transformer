@@ -1,11 +1,11 @@
-package per.binxigogo.excel.celldesc.string;
+package per.binxigogo.excel.type;
 
 /**
  * 常用字符串表达式
  * @author wangguobin
  *
  */
-public interface Regex {
+public interface StringRegex {
 	public static final String EMAIL = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
 	public static final String QQ = "^[1-9]*[1-9][0-9]*$";
 	public static final String TEL_NUM = "^(\\(\\d{3,4}-)|\\d{3.4}-)?\\d{7,8}$";

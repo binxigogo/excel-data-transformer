@@ -16,5 +16,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface DateDesc {
-	String[] pattern() default { "yyyy-MM-dd" };
+	String pattern() default "yyyy-MM-dd";
 }
