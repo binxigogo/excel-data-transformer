@@ -11,49 +11,68 @@ import org.apache.poi.openxml4j.exceptions.OLE2NotOfficeXmlFileException;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.junit.Test;
 
+import per.binxigogo.excel.poi.POIXLSExcelReader;
+import per.binxigogo.excel.poi.POIXLSXExcelReader;
+
 public class ExcelReaderTest {
 	@Test(expected = OfficeXmlFileException.class)
 	public void readXLSX() throws FileNotFoundException, IOException {
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			print(ExcelReader.readXLSX(in));
+			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			printHead(excelReader.readHead());
+			print(excelReader.readData());
 		}
 		System.out.println("--------------------");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			print(ExcelReader.readXLSX(in, 1));
+			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			printHead(excelReader.readHead(0));
+			print(excelReader.readData(1));
+			//print(ExcelReader.readXLSX(in, 1));
 		}
 		System.out.println("####################");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			print(ExcelReader.readXLSX(in, 1, false));
+			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			printHead(excelReader.readHead(0));
+			print(excelReader.readData(1, false));
 		}
 		System.out.println("%%%%%%%%%%%%%%%%%%%%");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			print(ExcelReader.readXLSX(in, 1, true));
+			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			printHead(excelReader.readHead(0));
+			print(excelReader.readData(1, true));
 		}
 		
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			print(ExcelReader.readXLS(in, -2, true));
+			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			printHead(excelReader.readHead(0));
+			print(excelReader.readData(-2, false));
 		}
 	}
 
 	@Test(expected = OLE2NotOfficeXmlFileException.class)
 	public void readXLS() throws FileNotFoundException, IOException {
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			print(ExcelReader.readXLS(in));
+			ExcelReader excelReader = new POIXLSExcelReader(in);
+			printHead(excelReader.readHead());
+			print(excelReader.readData());
 		}
 		System.out.println("--------------------");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			print(ExcelReader.readXLS(in, 1));
+			ExcelReader excelReader = new POIXLSExcelReader(in);
+			printHead(excelReader.readHead(0));
+			print(excelReader.readData(1));
 		}
 		System.out.println("####################");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			print(ExcelReader.readXLS(in, 1, false));
+			ExcelReader excelReader = new POIXLSExcelReader(in);
+			printHead(excelReader.readHead(0));
+			print(excelReader.readData(1, false));
 		}
 		System.out.println("%%%%%%%%%%%%%%%%%%%%");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			print(ExcelReader.readXLS(in, 1, true));
-		}
-		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			print(ExcelReader.readXLS(in, 1, true));
+			ExcelReader excelReader = new POIXLSExcelReader(in);
+			printHead(excelReader.readHead(0));
+			print(excelReader.readData(1, true));
 		}
 	}
 	private InputStream getFileInputStream(String pathname) throws FileNotFoundException {
@@ -68,5 +87,12 @@ public class ExcelReaderTest {
 			}
 			System.out.println();
 		}
+	}
+	private void printHead(String[] head) {
+		for (Object obj : head) {
+			System.out.print(obj);
+			System.out.print("\t|");
+		}
+		System.out.println();
 	}
 }

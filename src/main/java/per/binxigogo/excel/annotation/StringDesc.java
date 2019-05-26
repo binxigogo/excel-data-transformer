@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Target(ElementType.METHOD)
 public @interface StringDesc {
 	/**
 	 * 字符串允许的最短长度

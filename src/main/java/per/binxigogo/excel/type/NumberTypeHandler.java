@@ -1,15 +1,15 @@
 package per.binxigogo.excel.type;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import per.binxigogo.excel.annotation.NumberDesc;
 
 public abstract class NumberTypeHandler<T extends Number> extends BaseTypeHandler<T> {
 	private NumberDesc numberDesc;
 
-	public NumberTypeHandler(Field field) {
-		super(field);
-		this.numberDesc = getField().getAnnotation(NumberDesc.class);
+	public NumberTypeHandler(Method method) {
+		super(method);
+		this.numberDesc = getMethod().getAnnotation(NumberDesc.class);
 	}
 
 	public NumberDesc getNumberDesc() {

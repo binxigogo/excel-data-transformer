@@ -1,6 +1,6 @@
 package per.binxigogo.excel.type;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,9 +10,9 @@ import per.binxigogo.excel.exception.IllegalValueException;
 public class StringTypeHandler extends BaseTypeHandler<String> {
 	private StringDesc stringDesc;
 
-	public StringTypeHandler(Field field) {
-		super(field);
-		this.stringDesc = field.getAnnotation(StringDesc.class);
+	public StringTypeHandler(Method method) {
+		super(method);
+		this.stringDesc = method.getAnnotation(StringDesc.class);
 	}
 
 	@Override

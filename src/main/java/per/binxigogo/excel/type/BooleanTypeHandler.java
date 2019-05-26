@@ -1,6 +1,6 @@
 package per.binxigogo.excel.type;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,11 +15,11 @@ public class BooleanTypeHandler extends BaseTypeHandler<Boolean> {
 	private Set<String> trueSet = new HashSet<>();
 	private Set<String> falseSet = new HashSet<>();
 
-	public BooleanTypeHandler(Field field) {
-		super(field);
-		this.booleanDesc = field.getAnnotation(BooleanDesc.class);
+	public BooleanTypeHandler(Method method) {
+		super(method);
+		this.booleanDesc = method.getAnnotation(BooleanDesc.class);
 		if (booleanDesc == null) {
-			throw new AnnotationNotFoundException(getField().getName() + "布尔类型需要@BooleanDesc注解");
+			throw new AnnotationNotFoundException(method.getName() + "布尔类型需要@BooleanDesc注解");
 		}
 		addAll(trueSet, booleanDesc.trueStr());
 		addAll(falseSet, booleanDesc.falseStr());
@@ -33,10 +33,7 @@ public class BooleanTypeHandler extends BaseTypeHandler<Boolean> {
 
 	@Override
 	protected Boolean transform(Object value) {
-		if (value != null) {
-			return validate(StringUtils.trim(String.valueOf(value)));
-		}
-		return null;
+		return validate(StringUtils.trim(String.valueOf(value)));
 	}
 
 	private boolean validate(String s) {
@@ -46,7 +43,7 @@ public class BooleanTypeHandler extends BaseTypeHandler<Boolean> {
 			return false;
 		} else {
 			throw new IllegalValueException(
-					getField().getName() + "内容只能是：真：" + trueSet.toString() + "；假：" + falseSet.toString() + "");
+					getExcelColumn().name() + "内容只能是：真：" + trueSet.toString() + "；假：" + falseSet.toString() + "");
 		}
 	}
 }
