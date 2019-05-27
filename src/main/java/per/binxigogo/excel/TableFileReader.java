@@ -3,12 +3,12 @@ package per.binxigogo.excel;
 import java.util.List;
 
 /**
- * Excel内容读取器
+ * 表格文件内容读取器
  * 
  * @author wangguobin
  *
  */
-public interface ExcelReader {
+public interface TableFileReader {
 
 	/**
 	 * 读取第0行数据作为表头

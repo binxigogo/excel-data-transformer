@@ -11,10 +11,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import per.binxigogo.excel.ExcelReader;
+import per.binxigogo.excel.TableFileReader;
 import per.binxigogo.excel.exception.OutOfBoundsException;
 
-public class POIExcelReader implements ExcelReader {
+public class POIExcelReader implements TableFileReader {
 	private static final int ZERO = 0;
 	private static final int DEFAULT_HEAD_ROW_NUM = 0;
 	private static final int DEFAULT_START_ROW_NUM = 1;

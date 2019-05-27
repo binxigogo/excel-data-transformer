@@ -18,32 +18,32 @@ public class ExcelReaderTest {
 	@Test(expected = OfficeXmlFileException.class)
 	public void readXLSX() throws FileNotFoundException, IOException {
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			TableFileReader excelReader = new POIXLSXExcelReader(in);
 			printHead(excelReader.readHead());
 			print(excelReader.readData());
 		}
 		System.out.println("--------------------");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			TableFileReader excelReader = new POIXLSXExcelReader(in);
 			printHead(excelReader.readHead(0));
 			print(excelReader.readData(1));
 			//print(ExcelReader.readXLSX(in, 1));
 		}
 		System.out.println("####################");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			TableFileReader excelReader = new POIXLSXExcelReader(in);
 			printHead(excelReader.readHead(0));
 			print(excelReader.readData(1, false));
 		}
 		System.out.println("%%%%%%%%%%%%%%%%%%%%");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			TableFileReader excelReader = new POIXLSXExcelReader(in);
 			printHead(excelReader.readHead(0));
 			print(excelReader.readData(1, true));
 		}
 		
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xlsx")) {
-			ExcelReader excelReader = new POIXLSXExcelReader(in);
+			TableFileReader excelReader = new POIXLSXExcelReader(in);
 			printHead(excelReader.readHead(0));
 			print(excelReader.readData(-2, false));
 		}
@@ -52,25 +52,25 @@ public class ExcelReaderTest {
 	@Test(expected = OLE2NotOfficeXmlFileException.class)
 	public void readXLS() throws FileNotFoundException, IOException {
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			ExcelReader excelReader = new POIXLSExcelReader(in);
+			TableFileReader excelReader = new POIXLSExcelReader(in);
 			printHead(excelReader.readHead());
 			print(excelReader.readData());
 		}
 		System.out.println("--------------------");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			ExcelReader excelReader = new POIXLSExcelReader(in);
+			TableFileReader excelReader = new POIXLSExcelReader(in);
 			printHead(excelReader.readHead(0));
 			print(excelReader.readData(1));
 		}
 		System.out.println("####################");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			ExcelReader excelReader = new POIXLSExcelReader(in);
+			TableFileReader excelReader = new POIXLSExcelReader(in);
 			printHead(excelReader.readHead(0));
 			print(excelReader.readData(1, false));
 		}
 		System.out.println("%%%%%%%%%%%%%%%%%%%%");
 		try (InputStream in = getFileInputStream("/home/wangguobin/test/test.xls")) {
-			ExcelReader excelReader = new POIXLSExcelReader(in);
+			TableFileReader excelReader = new POIXLSExcelReader(in);
 			printHead(excelReader.readHead(0));
 			print(excelReader.readData(1, true));
 		}
