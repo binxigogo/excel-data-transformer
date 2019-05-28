@@ -13,7 +13,11 @@ import per.binxigogo.excel.exception.IllegalParameterNumException;
 import per.binxigogo.excel.exception.NotFoundColumnException;
 import per.binxigogo.excel.exception.NotSupportTypeException;
 import per.binxigogo.excel.type.BaseTypeHandler;
+import per.binxigogo.excel.type.BigDecimalTypeHandler;
+import per.binxigogo.excel.type.BigIntegerTypeHandler;
 import per.binxigogo.excel.type.BooleanTypeHandler;
+import per.binxigogo.excel.type.ByteTypeHandler;
+import per.binxigogo.excel.type.CharacterTypeHandler;
 import per.binxigogo.excel.type.CustomTypeHandler;
 import per.binxigogo.excel.type.DateTypeHandler;
 import per.binxigogo.excel.type.DoubleTypeHandler;
@@ -29,25 +33,26 @@ import per.binxigogo.excel.type.StringTypeHandler;
  * </p>
  * <p>
  * 该转换器可以将原始数据转换到指定对象中，具体用法如下：
+ * 
  * <pre>
  * try (InputStream in = new FileInputStream(new File("xxxxxxxxxxxxxxxx.xlsx"))) {
- * 		ExcelReader excelReader = new POIXLSXExcelReader(in);
- * 		Map<String, CustomTypeHandler<?>> mapTypeHandler = new HashMap<String, CustomTypeHandler<?>>();
- *		mapTypeHandler.put("nameHandler", new NameHandler());
- *		DataTransformer<User> transformer = new DataTransformer<User>();
- *		transformer.transform(excelReader.readHead(), excelReader.readData(), User.class, new TransformHandler<User>() {
+ * 	ExcelReader excelReader = new POIXLSXExcelReader(in);
+ * 	Map<String, CustomTypeHandler<?>> mapTypeHandler = new HashMap<String, CustomTypeHandler<?>>();
+ * 	mapTypeHandler.put("nameHandler", new NameHandler());
+ * 	DataTransformer<User> transformer = new DataTransformer<User>();
+ * 	transformer.transform(excelReader.readHead(), excelReader.readData(), User.class, new TransformHandler<User>() {
  *
- *			public void success(User rst) {
- *				// 处理成功数据
- *			}
+ * 		public void success(User rst) {
+ * 			// 处理成功数据
+ * 		}
  *
- *			public void error(int pos, Object[] rowData, String errorMsg) {
- *				// 处理失败数据
- *			}
- *		}, mapTypeHandler);
- *	} catch (Exception e) {
- *		e.printStackTrace();
- *	}
+ * 		public void error(int pos, Object[] rowData, String errorMsg) {
+ * 			// 处理失败数据
+ * 		}
+ * 	}, mapTypeHandler);
+ * } catch (Exception e) {
+ * 	e.printStackTrace();
+ * }
  * </pre>
  * </p>
  * 
@@ -69,14 +74,15 @@ public class DataTransformer<T> {
 	 * @throws IllegalParameterNumException
 	 * @throws NotSupportTypeException
 	 */
-	public void transform(String[] headData, List<Object[]> bodyData, Class<T> clazz, TransformHandler<T> transformHandler)
+	public void transform(String[] headData, List<Object[]> bodyData, Class<T> clazz,
+			TransformHandler<T> transformHandler)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException {
 		transform(headData, bodyData, clazz, transformHandler, null);
 	}
 
-	public void transform(String[] headData, List<Object[]> bodyData, Class<T> clazz, TransformHandler<T> transformHandler, 
-			Map<String, CustomTypeHandler<?>> customTypeHandlers)
+	public void transform(String[] headData, List<Object[]> bodyData, Class<T> clazz,
+			TransformHandler<T> transformHandler, Map<String, CustomTypeHandler<?>> customTypeHandlers)
 			throws NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException,
 			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Map<String, Method> methodMap = new HashMap<>();
@@ -172,9 +178,24 @@ public class DataTransformer<T> {
 			case "java.lang.Double":
 				typeHandler = new DoubleTypeHandler(columnMethod);
 				break;
+			case "java.math.BigInteger":
+				typeHandler = new BigIntegerTypeHandler(columnMethod);
+				break;
+			case "java.math.BigDecimal":
+				typeHandler = new BigDecimalTypeHandler(columnMethod);
+				break;
+			case "byte":
+			case "java.lang.Byte":
+				typeHandler = new ByteTypeHandler(columnMethod);
+				break;
+			case "char":
+			case "java.lang.Character":
+				typeHandler = new CharacterTypeHandler(columnMethod);
+				break;
 			default:
 				throw new NotSupportTypeException("不支持" + parameterTypes[0].getName() + "类型的参数");
 			}
+
 		}
 		return typeHandler;
 	}
