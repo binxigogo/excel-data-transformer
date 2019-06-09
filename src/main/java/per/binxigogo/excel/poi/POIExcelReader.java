@@ -1,8 +1,7 @@
 package per.binxigogo.excel.poi;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -12,13 +11,11 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import per.binxigogo.excel.TableFileReader;
-import per.binxigogo.excel.exception.OutOfBoundsException;
 
-public class POIExcelReader implements TableFileReader {
-	private static final int ZERO = 0;
-	private static final int DEFAULT_HEAD_ROW_NUM = 0;
-	private static final int DEFAULT_START_ROW_NUM = 1;
-	private Workbook workbook;
+public class POIExcelReader extends TableFileReader {
+	private Workbook workbook = null;
+	private int currentNumberOfSheet = 0;
+	private Iterator<Row> currentSheetIterator;
 
 	/**
 	 * 内容读取器构造函数
@@ -27,8 +24,15 @@ public class POIExcelReader implements TableFileReader {
 	 * @param excelType 数据流对应的Excel类型
 	 * @throws IOException
 	 */
-	public POIExcelReader(Workbook workbook) throws IOException {
+	public POIExcelReader(Workbook workbook, int headLineNum, int dataLineNum) throws IOException {
+		super(headLineNum, dataLineNum);
 		this.workbook = workbook;
+		currentSheetIterator = workbook.getSheetAt(currentNumberOfSheet).iterator();
+		skip(currentSheetIterator, getDataLineNum());
+	}
+
+	public POIExcelReader(Workbook workbook) throws IOException {
+		this(workbook, DEFAULT_HEAD_LINE_NUM, DEFAULT_DATA_LINE_NUM);
 	}
 
 	/**
@@ -36,8 +40,8 @@ public class POIExcelReader implements TableFileReader {
 	 * 
 	 * @return
 	 */
-	public String[] readHead() {
-		return readHead(DEFAULT_HEAD_ROW_NUM);
+	public String[] readHead() throws IOException {
+		return readHead(DEFAULT_HEAD_LINE_NUM);
 	}
 
 	/**
@@ -46,7 +50,7 @@ public class POIExcelReader implements TableFileReader {
 	 * @param lineNum 表头所在行号，从0开始
 	 * @return
 	 */
-	public String[] readHead(int lineNum) {
+	public String[] readHead(int lineNum) throws IOException {
 		int numberOfSheets = workbook.getNumberOfSheets();
 		for (int i = 0; i < numberOfSheets; i++) {
 			Sheet sheet = workbook.getSheetAt(i);
@@ -62,56 +66,12 @@ public class POIExcelReader implements TableFileReader {
 		return null;
 	}
 
-	/**
-	 * 从第1行开始读取所有Excel工作表内容，并忽略空行（空行是指所有值都是null，空字符不代表是空行）
-	 * 
-	 * @return
-	 */
-	public List<Object[]> readData() {
-		return readData(DEFAULT_START_ROW_NUM);
-	}
-
-	/**
-	 * 从指定行开始读取所有Excel工作表内容，并忽略空行（空行是指所有值都是null，空字符不代表是空行）
-	 * 
-	 * @param startRowNum 读取Excel开始行号（行号最小值是0）
-	 * @return
-	 */
-	public List<Object[]> readData(int startRowNum) {
-		return readData(startRowNum, true);
-	}
-
-	/**
-	 * 从指定行读取所有Excel工作表内容
-	 * 
-	 * @param startRowNum    读取Excel开始行号（行号最小值是0）
-	 * @param ignoreEmptyRow 是否忽略空行（空行是指该行数据全部为空内容）。true：忽略，不会将空行数据返回；false：不忽略，返回包含空行数据
-	 * @return
-	 */
-	public List<Object[]> readData(int startRowNum, boolean ignoreEmptyRow) {
-		return read(workbook, startRowNum, ignoreEmptyRow);
-	}
-
 	private String[] copyValue(Object[] obj) {
 		String[] strArr = new String[obj.length];
 		for (int i = 0; i < obj.length; i++) {
 			strArr[i] = obj[i] == null ? null : obj[i] instanceof String ? (String) obj[i] : String.valueOf(obj[i]);
 		}
 		return strArr;
-	}
-
-	private List<Object[]> read(Workbook workbook, int startRowNum, boolean ignoreEmptyRow) {
-		List<Object[]> excelDataList = new ArrayList<>();
-		if (startRowNum >= ZERO) {
-			int numberOfSheets = workbook.getNumberOfSheets();
-			for (int i = 0; i < numberOfSheets; i++) {
-				Sheet sheet = workbook.getSheetAt(i);
-				excelDataList.addAll(readSheet(sheet, startRowNum, ignoreEmptyRow));
-			}
-			return excelDataList;
-		} else {
-			throw new OutOfBoundsException("读取内容起始行不能是负数，实际值：" + startRowNum);
-		}
 	}
 
 	private Object[] getRowData(Row row) {
@@ -146,30 +106,6 @@ public class POIExcelReader implements TableFileReader {
 		return rowData;
 	}
 
-	/**
-	 * 从指定行读取工作表内容
-	 * 
-	 * @param workbook       Excel数据输入流
-	 * @param startRowNum
-	 * @param ignoreEmptyRow 是否忽略空行（空行是指该行数据全部为空内容）。true：忽略，不会将空行数据返回；false：不忽略，返回包含空行数据
-	 * @return
-	 */
-	private List<Object[]> readSheet(Sheet sheet, int startRowNum, boolean ignoreEmptyRow) {
-		List<Object[]> sheetRowData = new ArrayList<>();
-		int currentRowNum = ZERO;
-		for (Row row : sheet) {
-			if (currentRowNum < startRowNum) {
-				currentRowNum++;
-				continue;
-			}
-			Object[] rowData = getRowData(row);
-			if (!ignoreEmptyRow || !isEmptyRow(rowData)) {
-				sheetRowData.add(rowData);
-			}
-		}
-		return sheetRowData;
-	}
-
 	private boolean isEmptyRow(Object[] rowData) {
 		for (Object cellData : rowData) {
 			if (cellData != null) {
@@ -178,5 +114,38 @@ public class POIExcelReader implements TableFileReader {
 		}
 		return true;
 	}
-	
+
+	@Override
+	public Object[] nextData() {
+		if (currentSheetIterator.hasNext()) {
+			Object[] rowData = getRowData(currentSheetIterator.next());
+			if (!isIgnoreEmptyRow() || !isEmptyRow(rowData)) {
+				return rowData;
+			} else {
+				return nextData();
+			}
+		} else if (++currentNumberOfSheet < workbook.getNumberOfSheets()) {
+			currentSheetIterator = workbook.getSheetAt(currentNumberOfSheet).iterator();
+			skip(currentSheetIterator, getDataLineNum());
+			return nextData();
+		}
+		return null;
+	}
+
+	private void skip(Iterator<Row> iter, int lineNums) {
+		// 跳过指定行
+		int currentRowNum = ZERO;
+		while (currentRowNum < lineNums && currentSheetIterator.hasNext()) {
+			currentRowNum++;
+			currentSheetIterator.next();
+			continue;
+		}
+	}
+
+	@Override
+	public void close() throws IOException {
+		if (workbook != null) {
+			workbook.close();
+		}
+	}
 }

@@ -1,7 +1,6 @@
 package per.binxigogo.excel.csv;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -13,31 +12,37 @@ public class CSVFileReaderTest {
 		try {
 			TableFileReader tableFileReader = new CSVFileReader("/home/wangguobin/test/用户.csv");
 			printHead(tableFileReader.readHead());
-			printHead(tableFileReader.readHead(0));
+			printHead(tableFileReader.readHead());
+			tableFileReader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Test
 	public void readData() {
 		try {
 			TableFileReader tableFileReader = new CSVFileReader("/home/wangguobin/test/用户.csv");
-			print(tableFileReader.readData());
-			print(tableFileReader.readData(1, false));
+			tableFileReader.setIgnoreEmptyRow(false);
+			printHead(tableFileReader.readHead());
+			Object[] values = null;
+			while ((values = tableFileReader.nextData()) != null) {
+				print(values);
+			}
+			tableFileReader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	private void print(List<Object[]> list) {
-		for (Object[] objs : list) {
-			for (Object obj : objs) {
-				System.out.print(obj);
-				System.out.print("\t|");
-			}
-			System.out.println();
+
+	private void print(Object[] values) {
+		for (Object obj : values) {
+			System.out.print(obj);
+			System.out.print("\t|");
 		}
+		System.out.println();
 	}
+
 	private void printHead(String[] head) {
 		for (Object obj : head) {
 			System.out.print(obj);

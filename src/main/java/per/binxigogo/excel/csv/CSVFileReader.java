@@ -6,25 +6,28 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 import per.binxigogo.excel.TableFileReader;
 
 /**
- * <p>CSV文件读取器</p>
- * <p>读取采用“,”分割的CSV文件</p>
+ * <p>
+ * CSV文件读取器
+ * </p>
+ * <p>
+ * 读取采用“,”分割的CSV文件
+ * </p>
+ * 
  * @author wangguobin
  *
  */
-public class CSVFileReader implements TableFileReader {
+public class CSVFileReader extends TableFileReader {
 	public static final String DELIMITER = ",";
-	private static final int DEFAULT_HEAD_ROW_NUM = 0;
-	private static final int DEFAULT_START_ROW_NUM = 1;
-	private List<Object[]> dataList = new ArrayList<>();
+	private BufferedReader dataReader = null;
+	private InputStream in = null;
+	private String[] headData = null;
 
 	/**
 	 * 
@@ -32,70 +35,45 @@ public class CSVFileReader implements TableFileReader {
 	 * @throws IOException
 	 */
 	public CSVFileReader(String filePath) throws IOException {
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(new File(filePath));
-			readAll(fis);
-		} finally {
-			if (fis != null) {
-				fis.close();
-			}
-		}
+		this(new FileInputStream(new File(filePath)), DEFAULT_HEAD_LINE_NUM, DEFAULT_DATA_LINE_NUM);
 	}
 
 	public CSVFileReader(InputStream in) throws IOException {
-		readAll(in);
+		this(in, DEFAULT_HEAD_LINE_NUM, DEFAULT_DATA_LINE_NUM);
 	}
 
-	private void readAll(InputStream in) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			String[] lineData = line.split(DELIMITER);
-			dataList.add(lineData);
+	public CSVFileReader(String filePath, int headLineNum, int dataLineNum) throws IOException {
+		this(new FileInputStream(new File(filePath)), headLineNum, dataLineNum);
+	}
+
+	public CSVFileReader(InputStream in, int headLineNum, int dataLineNum) throws IOException {
+		super(headLineNum, dataLineNum);
+		this.in = in;
+		if (dataLineNum <= headLineNum) {
+			throw new IOException("dataLineNum必须大于headLineNum");
+		}
+		dataReader = new BufferedReader(new InputStreamReader(in));
+		skip(headLineNum);
+		headData = getHead();
+		skip(dataLineNum - headLineNum - 1);
+	}
+
+	@Override
+	public String[] readHead() throws IOException {
+		return headData != null ? Arrays.copyOf(headData, headData.length) : null;
+	}
+
+	private void skip(int lineNum) throws IOException {
+		int currentRowNum = ZERO;
+		while (currentRowNum < lineNum && dataReader.readLine() != null) {
+			System.out.println("skip=" + lineNum);
+			currentRowNum++;
 		}
 	}
 
-	@Override
-	public String[] readHead() {
-		return readHead(DEFAULT_HEAD_ROW_NUM);
-	}
-
-	@Override
-	public String[] readHead(int lineNum) {
-		String[] head = (String[])dataList.get(lineNum);
-		return Arrays.copyOf(head, head.length) ;
-	}
-
-	@Override
-	public List<Object[]> readData() {
-		return readData(DEFAULT_START_ROW_NUM, true);
-	}
-
-	@Override
-	public List<Object[]> readData(int startRowNum) {
-		return readData(startRowNum, true);
-	}
-
-	@Override
-	public List<Object[]> readData(int startRowNum, boolean ignoreEmptyRow) {
-		List<Object[]> returnData = new ArrayList<>();
-		if (ignoreEmptyRow) {
-			for (int i = startRowNum; i < dataList.size(); i++) {
-				Object[] lineData = dataList.get(i);
-
-				if (!isEmptyLine(lineData)) {
-					returnData.add(Arrays.copyOf(lineData, lineData.length));
-				}
-
-			}
-		} else {
-			for (int i = startRowNum; i < dataList.size(); i++) {
-				Object[] lineData = dataList.get(i);
-				returnData.add(Arrays.copyOf(lineData, lineData.length));
-			}
-		}
-		return returnData;
+	private String[] getHead() throws IOException {
+		String line = dataReader.readLine();
+		return line != null ? line.split(DELIMITER) : null;
 	}
 
 	private boolean isEmptyLine(Object[] lineData) {
@@ -105,5 +83,25 @@ public class CSVFileReader implements TableFileReader {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public Object[] nextData() throws IOException {
+		String line = null;
+		while ((line = dataReader.readLine()) != null) {
+			Object[] values = line.split(DELIMITER);
+			if (isIgnoreEmptyRow() && isEmptyLine(values)) {
+				continue;
+			}
+			return values;
+		}
+		return null;
+	}
+
+	@Override
+	public void close() throws IOException {
+		if (in != null) {
+			in.close();
+		}
 	}
 }

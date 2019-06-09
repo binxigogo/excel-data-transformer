@@ -9,4 +9,8 @@ public class POIXLSXExcelReader extends POIExcelReader {
 	public POIXLSXExcelReader(InputStream in) throws IOException {
 		super(new XSSFWorkbook(in));
 	}
+
+	public POIXLSXExcelReader(InputStream in, int headLineNum, int startRowNum) throws IOException {
+		super(new XSSFWorkbook(in), headLineNum, startRowNum);
+	}
 }

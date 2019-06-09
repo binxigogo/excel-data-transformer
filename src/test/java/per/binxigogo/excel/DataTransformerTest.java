@@ -7,6 +7,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.transform.TransformerException;
+
 import org.junit.Test;
 
 import per.binxigogo.excel.csv.CSVFileReader;
@@ -31,11 +33,11 @@ public class DataTransformerTest {
 		}
 	}
 	
-	private void transform(TableFileReader excelReader) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException {
+	private void transform(TableFileReader excelReader) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException, TransformerException {
 		Map<String, CustomTypeHandler<?>> mapTypeHandler = new HashMap<String, CustomTypeHandler<?>>();
 		mapTypeHandler.put("nameHandler", new NameHandler());
 		DataTransformer<User> transformer = new DataTransformer<User>();
-		transformer.transform(excelReader.readHead(), excelReader.readData(), User.class, new TransformHandler<User>() {
+		transformer.transform(excelReader, User.class, new TransformHandler<User>() {
 			
 			@Override
 			public void success(User rst) {

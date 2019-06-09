@@ -1,11 +1,14 @@
 package per.binxigogo.excel;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.transform.TransformerException;
 
 import per.binxigogo.excel.annotation.CustomDesc;
 import per.binxigogo.excel.annotation.ExcelColumn;
@@ -74,17 +77,16 @@ public class DataTransformer<T> {
 	 * @throws IllegalParameterNumException
 	 * @throws NotSupportTypeException
 	 */
-	public void transform(String[] headData, List<Object[]> bodyData, Class<T> clazz,
-			TransformHandler<T> transformHandler)
+	public void transform(TableFileReader tableFileReader, Class<T> clazz, TransformHandler<T> transformHandler)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-			NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException {
-		transform(headData, bodyData, clazz, transformHandler, null);
+			NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException, TransformerException {
+		transform(tableFileReader, clazz, transformHandler, null);
 	}
 
-	public void transform(String[] headData, List<Object[]> bodyData, Class<T> clazz,
-			TransformHandler<T> transformHandler, Map<String, CustomTypeHandler<?>> customTypeHandlers)
-			throws NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException,
-			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void transform(TableFileReader tableFileReader, Class<T> clazz, TransformHandler<T> transformHandler,
+			Map<String, CustomTypeHandler<?>> customTypeHandlers) throws NotFoundColumnException,
+			IllegalParameterNumException, NotSupportTypeException, InstantiationException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, TransformerException {
 		Map<String, Method> methodMap = new HashMap<>();
 		Method[] methods = clazz.getMethods();
 		for (Method method : methods) {
@@ -92,6 +94,12 @@ public class DataTransformer<T> {
 				ExcelColumn excelColumn = method.getAnnotation(ExcelColumn.class);
 				methodMap.put(excelColumn.name(), method);
 			}
+		}
+		String[] headData = null;
+		try {
+			headData = tableFileReader.readHead();
+		} catch (IOException e) {
+			throw new TransformerException("表头转换异常", e);
 		}
 		Method[] columnMethods = new Method[headData.length];
 		List<BaseTypeHandler<?>> typeHandlers = new ArrayList<>(headData.length);
@@ -106,14 +114,20 @@ public class DataTransformer<T> {
 				throw new NotFoundColumnException(clazz.getName() + "类中没有找到" + columnName + "对应的@ExcelColumn注解");
 			}
 		}
-		// 转换数据
-		for (int i = 0; i < bodyData.size(); i++) {
-			Object[] values = bodyData.get(i);
-			try {
-				transformHandler.success(transform(columnMethods, typeHandlers, clazz, values));
-			} catch (Exception e) {
-				transformHandler.error(i, values, e.getMessage());
+		Object[] values = null;
+		int i = 0;
+		try {
+			while ((values = tableFileReader.nextData()) != null) {
+				try {
+					// 转换数据
+					transformHandler.success(transform(columnMethods, typeHandlers, clazz, values));
+				} catch (Exception e) {
+					transformHandler.error(i, values, e.getMessage());
+				}
+				i++;
 			}
+		} catch (IOException e) {
+			throw new TransformerException("数据转换异常", e);
 		}
 	}
 
