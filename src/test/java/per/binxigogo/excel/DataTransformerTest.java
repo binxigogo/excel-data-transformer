@@ -36,8 +36,7 @@ public class DataTransformerTest {
 	private void transform(TableFileReader excelReader) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException, TransformerException {
 		Map<String, CustomTypeHandler<?>> mapTypeHandler = new HashMap<String, CustomTypeHandler<?>>();
 		mapTypeHandler.put("nameHandler", new NameHandler());
-		DataTransformer<User> transformer = new DataTransformer<User>();
-		transformer.transform(excelReader, User.class, new TransformHandler<User>() {
+		DataTransformer.transform(excelReader, User.class, new TransformHandler<User>() {
 			
 			@Override
 			public void success(User rst) {

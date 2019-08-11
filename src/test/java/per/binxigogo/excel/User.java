@@ -3,6 +3,7 @@ package per.binxigogo.excel;
 import java.util.Date;
 
 import per.binxigogo.excel.annotation.CustomDesc;
+import per.binxigogo.excel.annotation.DateDesc;
 import per.binxigogo.excel.annotation.ExcelColumn;
 import per.binxigogo.excel.annotation.NumberDesc;
 import per.binxigogo.excel.annotation.StringDesc;
@@ -39,6 +40,7 @@ public class User {
 	}
 
 	@ExcelColumn(name = "出生日期", trim = true)
+	@DateDesc(pattern = "yyyy年MM月dd日")
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
