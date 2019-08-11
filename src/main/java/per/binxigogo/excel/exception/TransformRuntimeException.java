@@ -6,26 +6,26 @@ package per.binxigogo.excel.exception;
  * @author wangguobin
  *
  */
-public class TransformException extends RuntimeException {
+public class TransformRuntimeException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
-	public TransformException() {
+	public TransformRuntimeException() {
 		super();
 	}
 
-	public TransformException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	public TransformRuntimeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 
-	public TransformException(String message, Throwable cause) {
+	public TransformRuntimeException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public TransformException(String message) {
+	public TransformRuntimeException(String message) {
 		super(message);
 	}
 
-	public TransformException(Throwable cause) {
+	public TransformRuntimeException(Throwable cause) {
 		super(cause);
 	}
 

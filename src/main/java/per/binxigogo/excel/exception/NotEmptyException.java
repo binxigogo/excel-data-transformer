@@ -6,7 +6,7 @@ package per.binxigogo.excel.exception;
  * @author wangguobin
  *
  */
-public class NotEmptyException extends RuntimeException {
+public class NotEmptyException extends TransformRuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public NotEmptyException() {

@@ -5,7 +5,7 @@ package per.binxigogo.excel.exception;
  * @author wangguobin
  *
  */
-public class IllegalValueException extends RuntimeException {
+public class IllegalValueException extends TransformRuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public IllegalValueException() {

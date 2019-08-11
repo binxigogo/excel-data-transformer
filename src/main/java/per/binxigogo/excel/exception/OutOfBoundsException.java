@@ -5,7 +5,7 @@ package per.binxigogo.excel.exception;
  * @author wangguobin
  *
  */
-public class OutOfBoundsException extends RuntimeException {
+public class OutOfBoundsException extends TransformRuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public OutOfBoundsException() {
