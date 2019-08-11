@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +11,7 @@ import java.util.Map;
 import javax.xml.transform.TransformerException;
 
 import per.binxigogo.excel.annotation.CustomDesc;
-import per.binxigogo.excel.annotation.DateDesc;
 import per.binxigogo.excel.annotation.ExcelColumn;
-import per.binxigogo.excel.annotation.NumberDesc;
-import per.binxigogo.excel.annotation.StringDesc;
 import per.binxigogo.excel.exception.IllegalParameterNumException;
 import per.binxigogo.excel.exception.NotFoundColumnException;
 import per.binxigogo.excel.exception.NotSupportTypeException;
@@ -32,7 +28,6 @@ import per.binxigogo.excel.type.FloatTypeHandler;
 import per.binxigogo.excel.type.IntegerTypeHandler;
 import per.binxigogo.excel.type.LongTypeHandler;
 import per.binxigogo.excel.type.SqlDateTypeHandler;
-import per.binxigogo.excel.type.StringRegex;
 import per.binxigogo.excel.type.StringTypeHandler;
 
 /**
