@@ -5,58 +5,57 @@
 在setter方法上增加@ExcelColumn指定对应转换文件的列名
 
 
-    public class User {
-	private String name;
-	private int age;
-	private Date birthday;
-	private String email;
+	public class User {
+		private String name;
+		private int age;
+		private Date birthday;
+		private String email;
 
-	public String getName() {
-		return name;
+		public String getName() {
+			return name;
+		}
+
+		@ExcelColumn(name = "姓名", required = true, trim = true)
+		@CustomDesc(handler = "nameHandler")
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public int getAge() {
+			return age;
+		}
+
+		@ExcelColumn(name = "年龄", trim = true)
+		@NumberDesc(min = "0", max = "100")
+		public void setAge(int age) {
+			this.age = age;
+		}
+
+		public Date getBirthday() {
+			return birthday;
+		}
+
+		@ExcelColumn(name = "出生日期", trim = true)
+		@DateDesc(pattern = "yyyy年MM月dd日")
+		public void setBirthday(Date birthday) {
+			this.birthday = birthday;
+		}
+
+		public String getEmail() {
+			return email;
+		}
+
+		@ExcelColumn(name = "Email", trim = true)
+		@StringDesc(pattern = StringRegex.EMAIL)
+		public void setEmail(String email) {
+			this.email = email;
+		}
+
+		@Override
+		public String toString() {
+			return "User [name=" + name + ", age=" + age + ", birthday=" + birthday + ", email=" + email + "]";
+		}
 	}
-
-	@ExcelColumn(name = "姓名", required = true, trim = true)
-	@CustomDesc(handler = "nameHandler")
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public int getAge() {
-		return age;
-	}
-
-	@ExcelColumn(name = "年龄", trim = true)
-	@NumberDesc(min = "0", max = "100")
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	public Date getBirthday() {
-		return birthday;
-	}
-
-	@ExcelColumn(name = "出生日期", trim = true)
-	@DateDesc(pattern = "yyyy年MM月dd日")
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	@ExcelColumn(name = "Email", trim = true)
-	@StringDesc(pattern = StringRegex.EMAIL)
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	@Override
-	public String toString() {
-		return "User [name=" + name + ", age=" + age + ", birthday=" + birthday + ", email=" + email + "]";
-	}
-
-    }
 
  第二步：
  如果有自定义转换类，需要将自定义转换类放到Map中，且key对应的值和@CustomDesc注解中的handler一致。如果没有可忽略此步。
