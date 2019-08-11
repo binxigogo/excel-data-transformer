@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,10 @@ import java.util.Map;
 import javax.xml.transform.TransformerException;
 
 import per.binxigogo.excel.annotation.CustomDesc;
+import per.binxigogo.excel.annotation.DateDesc;
 import per.binxigogo.excel.annotation.ExcelColumn;
+import per.binxigogo.excel.annotation.NumberDesc;
+import per.binxigogo.excel.annotation.StringDesc;
 import per.binxigogo.excel.exception.IllegalParameterNumException;
 import per.binxigogo.excel.exception.NotFoundColumnException;
 import per.binxigogo.excel.exception.NotSupportTypeException;
@@ -28,6 +32,7 @@ import per.binxigogo.excel.type.FloatTypeHandler;
 import per.binxigogo.excel.type.IntegerTypeHandler;
 import per.binxigogo.excel.type.LongTypeHandler;
 import per.binxigogo.excel.type.SqlDateTypeHandler;
+import per.binxigogo.excel.type.StringRegex;
 import per.binxigogo.excel.type.StringTypeHandler;
 
 /**
@@ -36,14 +41,68 @@ import per.binxigogo.excel.type.StringTypeHandler;
  * </p>
  * <p>
  * 该转换器可以将原始数据转换到指定对象中，具体用法如下：
- * 
+ * <pre>
+ *public class User {
+	private String name;
+	private int age;
+	private Date birthday;
+	private String email;
+
+	public String getName() {
+		return name;
+	}
+
+	<code>@ExcelColumn(name = "姓名", required = true, trim = true)</code>
+	<code>@CustomDesc(handler = "nameHandler")</code>
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	<code>@ExcelColumn(name = "年龄", trim = true)</code>
+	<code>@NumberDesc(min = "0", max = "100")</code>
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	<code>@ExcelColumn(name = "出生日期", trim = true)</code>
+	<code>@DateDesc(pattern = "yyyy年MM月dd日")</code>
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	<code>@ExcelColumn(name = "Email", trim = true)</code>
+	<code>@StringDesc(pattern = StringRegex.EMAIL)</code>
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	<code>@Override</code>
+	public String toString() {
+		return "User [name=" + name + ", age=" + age + ", birthday=" + birthday + ", email=" + email + "]";
+	}
+
+}
+ * </pre>
+ * 转换代码示例：
  * <pre>
  * try (InputStream in = new FileInputStream(new File("xxxxxxxxxxxxxxxx.xlsx"))) {
  * 	ExcelReader excelReader = new POIXLSXExcelReader(in);
- * 	Map<String, CustomTypeHandler<?>> mapTypeHandler = new HashMap<String, CustomTypeHandler<?>>();
+ * 	// 用于存放自定义转换器
+ * 	Map&lt;String, CustomTypeHandler&lt;?>> mapTypeHandler = new HashMap&lt;String, CustomTypeHandler&lt;?>>();
  * 	mapTypeHandler.put("nameHandler", new NameHandler());
- * 	DataTransformer<User> transformer = new DataTransformer<User>();
- * 	transformer.transform(excelReader.readHead(), excelReader.readData(), User.class, new TransformHandler<User>() {
+ * 	DataTransformer.transform(excelReader.readHead(), excelReader.readData(), User.class, new TransformHandler<User>() {
  *
  * 		public void success(User rst) {
  * 			// 处理成功数据
