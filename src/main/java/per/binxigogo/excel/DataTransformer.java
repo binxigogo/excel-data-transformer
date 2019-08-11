@@ -62,13 +62,14 @@ import per.binxigogo.excel.type.StringTypeHandler;
  * @author wangguobin
  *
  */
-public class DataTransformer<T> {
+public class DataTransformer {
 	/**
+	 * 将TableFileReader读取的数据转换为指定类型的对象（无自定义转换器）
 	 * 
-	 * @param headData
-	 * @param bodyData
-	 * @param clazz
-	 * @param transformHandler
+	 * @param <T>
+	 * @param tableFileReader
+	 * @param transfToClazz    转换目标类
+	 * @param transformHandler 转换处理器，用于处理转换成功/失败的后续操作
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 * @throws IllegalArgumentException
@@ -76,19 +77,39 @@ public class DataTransformer<T> {
 	 * @throws NotFoundColumnException
 	 * @throws IllegalParameterNumException
 	 * @throws NotSupportTypeException
+	 * @throws TransformerException
 	 */
-	public void transform(TableFileReader tableFileReader, Class<T> clazz, TransformHandler<T> transformHandler)
+	public static <T> void transform(TableFileReader tableFileReader, Class<T> transfToClazz,
+			TransformHandler<T> transformHandler)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException, TransformerException {
-		transform(tableFileReader, clazz, transformHandler, null);
+		transform(tableFileReader, transfToClazz, transformHandler, null);
 	}
 
-	public void transform(TableFileReader tableFileReader, Class<T> clazz, TransformHandler<T> transformHandler,
-			Map<String, CustomTypeHandler<?>> customTypeHandlers) throws NotFoundColumnException,
-			IllegalParameterNumException, NotSupportTypeException, InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, TransformerException {
+	/**
+	 * 将TableFileReader读取的数据转换为指定类型的对象（包含自定义转换器）
+	 * 
+	 * @param <T>
+	 * @param tableFileReader
+	 * @param transfToClazz      转换目标类
+	 * @param transformHandler   转换处理器，用于处理转换成功/失败的后续操作
+	 * @param customTypeHandlers
+	 * @throws NotFoundColumnException
+	 * @throws IllegalParameterNumException
+	 * @throws NotSupportTypeException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws TransformerException
+	 */
+	public static <T> void transform(TableFileReader tableFileReader, Class<T> transfToClazz,
+			TransformHandler<T> transformHandler, Map<String, CustomTypeHandler<?>> customTypeHandlers)
+			throws NotFoundColumnException, IllegalParameterNumException, NotSupportTypeException,
+			InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			TransformerException {
 		Map<String, Method> methodMap = new HashMap<>();
-		Method[] methods = clazz.getMethods();
+		Method[] methods = transfToClazz.getMethods();
 		for (Method method : methods) {
 			if (method.getName().startsWith("set") && method.isAnnotationPresent(ExcelColumn.class)) {
 				ExcelColumn excelColumn = method.getAnnotation(ExcelColumn.class);
@@ -111,7 +132,8 @@ public class DataTransformer<T> {
 				columnMethods[i] = columnMethod;
 				typeHandlers.add(getTypeHandler(columnMethod, customTypeHandlers));
 			} else {
-				throw new NotFoundColumnException(clazz.getName() + "类中没有找到" + columnName + "对应的@ExcelColumn注解");
+				throw new NotFoundColumnException(
+						transfToClazz.getName() + "类中没有找到" + columnName + "对应的@ExcelColumn注解");
 			}
 		}
 		Object[] values = null;
@@ -120,7 +142,7 @@ public class DataTransformer<T> {
 			while ((values = tableFileReader.nextData()) != null) {
 				try {
 					// 转换数据
-					transformHandler.success(transform(columnMethods, typeHandlers, clazz, values));
+					transformHandler.success(transform(columnMethods, typeHandlers, transfToClazz, values));
 				} catch (Exception e) {
 					transformHandler.error(i, values, e.getMessage());
 				}
