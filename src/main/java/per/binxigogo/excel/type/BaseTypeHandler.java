@@ -9,6 +9,13 @@ import per.binxigogo.excel.annotation.ExcelColumn;
 import per.binxigogo.excel.exception.AnnotationNotFoundException;
 import per.binxigogo.excel.exception.NotEmptyException;
 
+/**
+ * 所有类型转换器的基类
+ * 
+ * @author wangguobin
+ *
+ * @param <T>
+ */
 public abstract class BaseTypeHandler<T> {
 	// private Field field;
 	private Method method;
@@ -49,5 +56,11 @@ public abstract class BaseTypeHandler<T> {
 		this.excelColumn = method.getAnnotation(ExcelColumn.class);
 	}
 
+	/**
+	 * 将对象转换为指定类型格式
+	 * 
+	 * @param value
+	 * @return
+	 */
 	protected abstract T transform(Object value);
 }

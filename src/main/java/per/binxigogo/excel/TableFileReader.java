@@ -41,14 +41,25 @@ public abstract class TableFileReader {
 	}
 
 	/**
-	 * 读取第0行数据作为表头
+	 * 读取表头
 	 * 
 	 * @return
 	 */
 	public abstract String[] readHead() throws IOException;
 
+	/**
+	 * 得到下一行数据
+	 * 
+	 * @return 如果返回null表示已读取到文件末尾
+	 * @throws IOException
+	 */
 	public abstract Object[] nextData() throws IOException;
 
+	/**
+	 * 关闭IO流
+	 * 
+	 * @throws IOException
+	 */
 	public abstract void close() throws IOException;
 
 }

@@ -7,7 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 用于描述转换数值类型的注解
+ * 用于描述转换数值类型的注解，支持的数值类型包括：BigDecimal、BigInteger、Double、Float、Integer、Long数值对象
+ * 以及double、float、int、long基本类型
  * 
  * @author wangguobin
  *
@@ -27,7 +28,7 @@ public @interface NumberDesc {
 	String max() default "";
 
 	/**
-	 * 精度，用于小数
+	 * 数值精度，用于小数
 	 */
 	int precision() default -1;
 }

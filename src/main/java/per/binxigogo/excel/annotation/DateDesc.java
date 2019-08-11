@@ -16,5 +16,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface DateDesc {
+	/**
+	 * 日期匹配规则
+	 * 
+	 * @return
+	 */
 	String pattern() default "yyyy-MM-dd";
 }

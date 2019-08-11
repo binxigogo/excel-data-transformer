@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 用于转换描述布尔类型的注解
+ * 用于描述转换布尔类型的注解
  * 
  * @author wangguobin
  *
@@ -17,12 +17,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface BooleanDesc {
 	/**
-	 * 配置false的字符串
+	 * 配置转换false的字符串
 	 */
 	String[] falseStr() default { "否", "false" };
 
 	/**
-	 * 配置true的字符串
+	 * 配置转换true的字符串
 	 */
 	String[] trueStr() default { "是", "true" };
 }
