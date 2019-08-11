@@ -72,10 +72,9 @@
  对数据进行转换。
  
  
-	 try (InputStream in = new FileInputStream(new File("/xxx/xxx/xxx/用户.xlsx"))) {
-	    TableFileReader excelReader = new POIXLSXExcelReader(in);
-	    transform(excelReader);
-	    Map<String, CustomTypeHandler<?>> mapTypeHandler = new HashMap<String, CustomTypeHandler<?>>();
+	try (InputStream in = new FileInputStream(new File("/xxx/xxx/xxx/用户.xlsx"))) {
+		TableFileReader excelReader = new POIXLSXExcelReader(in);
+		Map<String, CustomTypeHandler<?>> mapTypeHandler = new HashMap<String, CustomTypeHandler<?>>();
 		mapTypeHandler.put("nameHandler", new NameHandler());
 		DataTransformer.transform(excelReader, User.class, new TransformHandler<User>() {
 			
@@ -90,5 +89,5 @@
 			}
 		}, mapTypeHandler);
 	  } catch (Exception e) {
-	    e.printStackTrace();
+		e.printStackTrace();
 	  }
