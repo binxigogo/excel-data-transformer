@@ -191,16 +191,16 @@ public class DataTransformer {
 			}
 		}
 		Object[] values = null;
-		int i = 0;
+		int line = 0;
 		try {
 			while ((values = tableFileReader.nextData()) != null) {
 				try {
 					// 转换数据
 					transformHandler.success(transform(columnMethods, typeHandlers, transfToClazz, values));
 				} catch (Exception e) {
-					transformHandler.error(i, values, e.getMessage());
+					transformHandler.error(line, values, e.getMessage());
 				}
-				i++;
+				line++;
 			}
 		} catch (IOException e) {
 			throw new TransformerException("数据转换异常", e);
